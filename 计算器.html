@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <title> 事件</title>  
+  <script type="text/javascript">
+   function count(){
+    // num1类型是字符串
+    var num1 = document.getElementById("txt1").value;
+    var num2 = document.getElementById("txt2").value;
+    var select = document.getElementById("select").value;
+    var result = "";
+    switch(select) {
+        case "+":
+            result = parseFloat(num1) + parseFloat(num2);
+            break;
+        case "-":
+            result = parseFloat(num1) - parseFloat(num2);
+            break;
+        case "*":
+            result = parseFloat(num1) * parseFloat(num2);
+            break;
+        default:
+            result = parseFloat(num1) / parseFloat(num2);
+    }
+    // 把result赋给结果框的值
+    document.getElementById("fruit").value = result;
+    
+   }
+  </script> 
+ </head> 
+ <body>
+   <h2>计算器</h2>
+   <input type='text' id='txt1' /> 
+   <select id='select'>
+    	<option value='+'>+</option>
+		<option value="-">-</option>
+		<option value="*">*</option>
+		<option value="/">/</option>
+   </select>
+   <input type='text' id='txt2' /> 
+   <input type='button' value=' = ' onclick=count() /> <!--通过 = 按钮来调用创建的函数，得到结果--> 
+   <input type='text' id='fruit' />   
+ </body>
+</html>

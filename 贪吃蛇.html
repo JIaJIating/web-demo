@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>贪吃蛇</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .back {
+            width: 1005px;
+            height: 600px;
+            border: 10px blue outset;
+            margin: 0 auto;
+        }
+
+        .txt {
+            position: relative;
+            background-color: silver;
+            width: 100px;
+            height: 600px;
+            text-align: center;
+            line-height: 55px;
+            float: left;
+            border-right: 5px outset blue;
+        }
+
+        .txt button {
+            font-size: large;
+            width: 80px;
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="back">
+    <div class="txt">
+        <button class="btn_1">开始游戏</button>
+        <button class="btn_2">暂停游戏</button>
+        <button class="btn_3">自动模式</button>
+    </div>
+</div>
+<script>
+    //上地图
+    var Map;
+    var Snack;
+    var Food;
+    function map() {
+        //造相关地图属性
+        this.width = "900";
+        this.height = "600";
+        this.backcolor = "white";
+        this.position = "relative";
+        this.float = "left";
+        //造地图对象
+        this._map = null;
+        this.createmap = function () {
+            if (this._map == null) {
+                this._map = document.createElement("div");
+                //设置属性
+                this._map.style.width = this.width + "px";
+                this._map.style.height = this.height + "px";
+                this._map.style.float = this.float;
+                this._map.style.position = this.position;
+                this._map.style.backgroundColor = this.backcolor;
+                document.getElementsByClassName("back")[0].appendChild(this._map);
+            }
+        }
+    }
+    function snack() {
+        this.width = "30";
+        this.height = "30";
+        this.position = "absolute";
+        this.border = "1px solid green";
+        this.direct = "right";
+        //造蛇
+        this.snackbody = [[4, 1, null, "red"], [3, 1, null, "yellow"], [2, 1, null, "yellow"]];
+        this.setdirection = function (code) {
+            switch (code) {
+                case 37:
+                    this.direct = "left";
+                    break;
+                case 38:
+                    this.direct = "up";
+                    break;
+                case 39:
+                    this.direct = "right";
+                    break;
+                case 40:
+                    this.direct = "bottom";
+                    break;
+            }
+        }
+        this.sendFood = function () {
+            if (Food.x >= this.snackbody[0][0]) {
+                this.direct = "right";
+                if (Food.x == this.snackbody[0][0]) {
+                    if (Food.y >= this.snackbody[0][1]) {
+                        this.direct = "bottom";
+                    }
+                    else {
+                        this.direct = "up";
+                    }
+                }
+            }
+            else {
+                this.direct = "left";
+                if (Food.x == this.snackbody[0][0]) {
+                    if (Food.y >= this.snackbody[0][1]) {
+                        this.direct = "bottom";
+                    }
+                    else {
+                        this.direct = "up";
+                    }
+                }
+            }
+        }
+        this.move = function () {
+            //属性传递
+            var length = this.snackbody.length - 1;
+            //蛇移动的属性传递
+            for (var i = length; i > 0; i--) {
+                this.snackbody[i][0] = this.snackbody[i - 1][0];
+                this.snackbody[i][1] = this.snackbody[i - 1][1];
+            }
+            switch (this.direct) {
+                case "right":
+                    this.snackbody[0][0] += 1;
+                    break;
+                case "left":
+                    this.snackbody[0][0] -= 1;
+                    break;
+                case "up":
+                    this.snackbody[0][1] -= 1;
+                    break;
+                case "bottom":
+                    this.snackbody[0][1] += 1;
+                    break;
+            }
+            //蛇撞自己
+            /*for (var i = 1; i < this.snackbody.length; i++) {
+             if (this.snackbody[0][0] == this.snackbody[i][0] && this.snackbody[0][1] == this.snackbody[i][1]) {
+             //计时器停止
+             clearInterval(timer1);
+             alert("撞到自己了！");
+             }
+             }*/
+            //蛇穿墙
+            if (this.snackbody[0][0] >= 30) {
+                this.snackbody[0][0] = 0;
+            }
+            if (this.snackbody[0][0] < 0) {
+                this.snackbody[0][0] = 29;
+            }
+            if (this.snackbody[0][1] >= 20) {
+                this.snackbody[0][1] = 0;
+            }
+            if (this.snackbody[0][1] < 0) {
+                this.snackbody[0][1] = 19;
+            }
+            //蛇头找实物
+            if (this.snackbody[0][0] == Food.x && this.snackbody[0][1] == Food.y) {
+                this.snackbody.push(
+                        [
+                            this.snackbody[this.snackbody.length - 1][0],
+                            this.snackbody[this.snackbody.length - 1][1],
+                            null,
+                            "yellow"
+                        ]
+                )
+                Food.createfood();
+            }
+            Snack.creartSnack();
+        }
+        this.creartSnack = function () {
+            for (var i = 0; i < this.snackbody.length; i++) {
+                if (this.snackbody[i][2] == null) {
+                    this.snackbody[i][2] = document.createElement("div");
+                    this.snackbody[i][2].style.width = this.width + "px";
+                    this.snackbody[i][2].style.height = this.height + "px";
+                    this.snackbody[i][2].style.position = this.position;
+                    this.snackbody[i][2].style.border = this.border;
+                    this.snackbody[i][2].style.backgroundColor = this.snackbody[i][3];
+                    Map._map.appendChild(this.snackbody[i][2]);
+                }
+                this.snackbody[i][2].style.left = this.snackbody[i][0] * this.width + "px";
+                this.snackbody[i][2].style.top = this.snackbody[i][1] * this.height + "px";
+            }
+        }
+    }
+    function food() {
+        this.width = "30";
+        this.height = "30";
+        this.border = "1px solid red";
+        this.backcolor = "#c6542f";
+        this.position = "absolute";
+        this._food = null;
+        this.x = 0;
+        this.y = 0;
+        this.createfood = function () {
+            this.x = Math.floor(Math.random() * 30);
+            this.y = Math.floor(Math.random() * 20);
+            if (this._food == null) {
+                this._food = document.createElement("div");
+                this._food.style.width = this.width + "px";
+                this._food.style.height = this.height + "px";
+                this._food.style.position = this.position;
+                this._food.style.backgroundColor = this.backcolor;
+                this._food.style.border = this.border;
+                Map._map.appendChild(this._food);
+            }
+            this._food.style.left = this.x * this.width + "px";
+            this._food.style.top = this.y * this.height + "px";
+        }
+    }
+    var timer1;
+    var timer2;
+    window.onload = function () {
+        Map = new map();
+        Map.createmap();
+        Snack = new snack();
+        Snack.creartSnack();
+        Food = new food();
+        Food.createfood();
+        document.onkeydown = function (event) {
+            Snack.setdirection(event.keyCode);
+        }
+        //点击开始游戏
+        var btn_start = document.getElementsByClassName("btn_1")[0];
+        btn_start.onclick = function () {
+            timer1 = setInterval("Snack.move()", 100);
+        }
+        //点击暂停游戏
+        var btn_z = document.getElementsByClassName("btn_2")[0];
+        btn_z.onclick = function () {
+            clearInterval(timer1);
+            clearInterval(timer2);
+        }
+        //自动模式
+        var btn_s = document.getElementsByClassName("btn_3")[0];
+        btn_s.onclick = function () {
+            timer1 = setInterval("Snack.move()", 50);
+            timer2 = setInterval("Snack.sendFood()", 50)
+        }
+    }
+</script>
+</body>
+</html>
